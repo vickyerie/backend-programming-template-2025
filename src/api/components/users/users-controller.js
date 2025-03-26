@@ -191,6 +191,21 @@ async function deleteUser(request, response, next) {
   }
 }
 
+async function loginUser(request, response, next) {
+  try {
+    const { email, password } = request.body;
+
+    const result = await usersService.loginUser(email, password);
+
+    return response.status(200).json(result);
+  } catch (error) {
+    if (error.message === 'INVALID_PASSWORD') {
+      return response.status(403).json({ error: 'INVALID_PASSWORD' });
+    }
+    return next(error);
+  }
+}
+
 module.exports = {
   getUsers,
   getUser,
@@ -198,4 +213,5 @@ module.exports = {
   updateUser,
   changePassword,
   deleteUser,
+  loginUser,
 };

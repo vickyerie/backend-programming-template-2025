@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const usersRepository = require('./users-repository');
 
 async function getUsers() {
@@ -25,6 +26,19 @@ async function deleteUser(id) {
   return usersRepository.deleteUser(id);
 }
 
+async function loginUser(email, password) {
+  const user = await usersRepository.getUserByEmail(email);
+  if (!user) {
+    throw new Error('INVALID_PASSWORD');
+  }
+  const passwordMatch = await bcrypt.compare(password, user.password);
+  if (!passwordMatch) {
+    throw new Error('INVALID_PASSWORD');
+  }
+
+  return { message: 'Login successful' };
+}
+
 module.exports = {
   getUsers,
   getUser,
@@ -32,4 +46,5 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  loginUser,
 };
